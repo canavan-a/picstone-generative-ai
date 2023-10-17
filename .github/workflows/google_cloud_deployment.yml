@@ -53,4 +53,4 @@ jobs:
           SERVICE_NAME: picstone-cd
           REGION: us-central1
         run: |
-          gcloud run deploy picstone-cd --image=us-central1-docker.pkg.dev/$GOOGLE_PROJECT/my-containers/my-container:latest --platform=managed --region=REGION --quiet
+          gcloud run deploy picstone-cd --image=us-central1-docker.pkg.dev/$GOOGLE_PROJECT/my-containers/my-container:latest --platform=managed --region=us-central1 --quiet
