@@ -25,7 +25,7 @@ jobs:
 
       - name: Authenticate with Google Cloud
         run: |
-          echo "${{ secrets.GCLOUD_KEY_JSON }}" | base64 --decode --ignore-garbage > /tmp/gcloud-service-key.json
+          echo "${{ secrets.GCLOUD_KEY_JSON }}" > /tmp/gcloud-service-key.json
           gcloud auth activate-service-account --key-file=/tmp/gcloud-service-key.json
         env:
           GCLOUD_KEY_JSON: ${{ secrets.GCLOUD_KEY_JSON }}
