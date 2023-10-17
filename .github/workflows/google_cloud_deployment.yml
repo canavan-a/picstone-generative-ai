@@ -27,6 +27,7 @@ jobs:
 
       - name: Configure Docker
         uses: docker/setup-qemu-action@v3
+
       - name: Build Docker image
         run: |
           docker build -t us-central1-docker.pkg.dev/${{ secrets.GCLOUD_PROJECT_ID }}/my-containers/your-app:latest .
@@ -36,7 +37,6 @@ jobs:
       - name: Push Docker image to Google Artifact Registry
         run: |
           gcloud auth configure-docker us-central1-docker.pkg.dev
-          
           docker push us-central1-docker.pkg.dev/${{ secrets.GCLOUD_PROJECT_ID }}/my-containers/your-app:latest
         env:
           GCLOUD_PROJECT_ID: ${{ secrets.GCLOUD_PROJECT_ID }}
