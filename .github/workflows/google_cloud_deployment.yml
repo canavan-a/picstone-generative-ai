@@ -21,7 +21,6 @@ jobs:
           export_default_credentials: true
 
       
-          
       - name: Deploy a new revision to Google Cloud Run
         env:
           GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
