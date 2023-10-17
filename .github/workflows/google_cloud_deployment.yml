@@ -25,8 +25,7 @@ jobs:
 
       - name: Authenticate with Google Cloud
         run: |
-          echo "${{ secrets.GCLOUD_KEY_JSON }}" > /tmp/gcloud-service-key.json
-          gcloud auth activate-service-account --key-file=/tmp/gcloud-service-key.json
+          echo -n ${{ secrets.GCLOUD_KEY_JSON }} | gcloud auth activate-service-account --key-file=-
         env:
           GCLOUD_KEY_JSON: ${{ secrets.GCLOUD_KEY_JSON }}
 
@@ -34,7 +33,7 @@ jobs:
         run: |
           docker build -t us-central1-docker.pkg.dev/${{ secrets.GCLOUD_PROJECT_ID }}/my-containers/your-app:latest .
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcloud-service-key.json
+          GOOGLE_APPLICATION_CREDENTIALS: /github/home/gcloud-service-key.json
 
       - name: Push Docker image to Google Artifact Registry
         run: |
