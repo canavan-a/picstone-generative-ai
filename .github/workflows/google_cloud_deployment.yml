@@ -22,7 +22,7 @@ jobs:
         
     - name: Change to the "server" folder
       run: |
-        cd server
+        cd ./server
       working-directory: ./server
 
     - name: build and push the docker image
