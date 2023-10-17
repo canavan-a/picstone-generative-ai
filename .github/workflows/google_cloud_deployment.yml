@@ -13,27 +13,34 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Set Google Cloud Application Credentials
+        run: |
+          echo "${{ secrets.GCLOUD_KEY_JSON }}" > $GITHUB_WORKSPACE/gcloud/gcloud-service-key.json
+          export GOOGLE_APPLICATION_CREDENTIALS=$GITHUB_WORKSPACE/gcloud/gcloud-service-key.json
+        env:
+          GCLOUD_KEY_JSON: ${{ secrets.GCLOUD_KEY_JSON }}
+
+      - name: Configure Docker
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCLOUD_CLIENT_EMAIL }}
-          export_default_credentials: true
+          service_account_key: ${{ secrets.GCLOUD_KEY_JSON }}
+          export_default_credentials: false
 
       - name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          application_default_credentials: true
-
-      - name: Configure Docker
-        uses: docker/setup-qemu-action@v3
+        run: gcloud auth activate-service-account --key-file=$GITHUB_WORKSPACE/gcloud/gcloud-service-key.json
+        env:
+          GCLOUD_KEY_JSON: ${{ secrets.GCLOUD_KEY_JSON }}
 
       - name: Build Docker image
         run: |
           docker build -t us-central1-docker.pkg.dev/${{ secrets.GCLOUD_PROJECT_ID }}/my-containers/your-app:latest .
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCLOUD_CLIENT_EMAIL }}
-      
+          GOOGLE_APPLICATION_CREDENTIALS: $GITHUB_WORKSPACE/gcloud/gcloud-service-key.json
+
       - name: Push Docker image to Google Artifact Registry
         run: |
           gcloud auth configure-docker us-central1-docker.pkg.dev
