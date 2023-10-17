@@ -46,3 +46,11 @@ jobs:
           gcloud auth configure-docker us-central1-docker.pkg.dev
           docker build -t us-central1-docker.pkg.dev/$GOOGLE_PROJECT/my-containers/my-container:latest .
           docker push us-central1-docker.pkg.dev/$GOOGLE_PROJECT/my-containers/my-container:latest
+          
+      - name: Deploy a new revision to Google Cloud Run
+        env:
+          GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+          SERVICE_NAME: picstone-cd
+          REGION: us-central1
+        run: |
+          gcloud run deploy picstone-cd --image=us-central1-docker.pkg.dev/$GOOGLE_PROJECT/my-containers/my-container:latest --platform=managed --region=REGION --quiet
