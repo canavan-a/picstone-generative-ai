@@ -1,17 +1,17 @@
-name: Deploy to Google Cloud
-#change to deploy
+name: Push to Google Artifact Registry
+
 on:
   push:
     branches:
       - main
 
 jobs:
-  deploy:
+  push:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
@@ -20,17 +20,23 @@ jobs:
           service_account_key: ${{ secrets.GCLOUD_CLIENT_EMAIL }}
           export_default_credentials: true
 
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          application_default_credentials: true
+
       - name: Configure Docker
-        uses: docker/setup-qemu-action@v1
-      - name: Build and push Docker image
+        uses: docker/setup-qemu-action@v3
+      - name: Build Docker image
         run: |
-          docker build -t us-central1-docker.pkg.dev/${{ secrets.GCLOUD_PROJECT_ID }}/your-app:latest .
-
-          gcloud auth configure-docker
-
-          docker push us-central1-docker.pkg.dev/${{ secrets.GCLOUD_PROJECT_ID }}/your-app:latest
+          docker build -t us-central1-docker.pkg.dev/${{ secrets.GCLOUD_PROJECT_ID }}/my-containers/your-app:latest .
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCLOUD_CLIENT_EMAIL }}
       
-
-
+      - name: Push Docker image to Google Artifact Registry
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev
+          
+          docker push us-central1-docker.pkg.dev/${{ secrets.GCLOUD_PROJECT_ID }}/my-containers/your-app:latest
+        env:
+          GCLOUD_PROJECT_ID: ${{ secrets.GCLOUD_PROJECT_ID }}
