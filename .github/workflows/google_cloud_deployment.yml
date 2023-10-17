@@ -1,43 +1,29 @@
-name: Push to Google Artifact Registry
+name: Deploy Container
 
 on:
   push:
     branches:
-      - main
+    - 'main'
 
 jobs:
-  push:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
 
-      - name: Configure Docker
-        uses: docker/setup-qemu-action@v3
+    - name: code checkout
+      uses: actions/checkout@v2
 
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
-        with:
-          project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCLOUD_KEY_JSON }}
-          export_default_credentials: false
+    - name: install the gcloud cli
+      uses: google-github-actions/setup-gcloud@v0
+      with:
+        project_id: ${{ secrets.GOOGLE_PROJECT }}
+        service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        export_default_credentials: true
 
-      - name: Authenticate with Google Cloud
-        run: |
-          echo -n ${{ secrets.GCLOUD_KEY_JSON }} | gcloud auth activate-service-account --key-file=-
-        env:
-          GCLOUD_KEY_JSON: ${{ secrets.GCLOUD_KEY_JSON }}
-
-      - name: Build Docker image
-        run: |
-          docker build -t us-central1-docker.pkg.dev/${{ secrets.GCLOUD_PROJECT_ID }}/my-containers/your-app:latest .
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: /github/home/gcloud-service-key.json
-
-      - name: Push Docker image to Google Artifact Registry
-        run: |
-          gcloud auth configure-docker us-central1-docker.pkg.dev
-          docker push us-central1-docker.pkg.dev/${{ secrets.GCLOUD_PROJECT_ID }}/my-containers/your-app:latest
-        env:
-          GCLOUD_PROJECT_ID: ${{ secrets.GCLOUD_PROJECT_ID }}
+    - name: build and push the docker image
+      env:
+        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
+      run: |
+        gcloud auth configure-docker us-central1-docker.pkg.dev
+        docker build -t us-central1-docker.pkg.dev/$GOOGLE_PROJECT/my-containers/my-container:latest .
+        docker push us-central1-docker.pkg.dev/$GOOGLE_PROJECT/my-containers/my-container:latest
