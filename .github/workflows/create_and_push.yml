@@ -1,5 +1,5 @@
-
-name: Deploy Container
+ 
+name: Create and Push Container
 
 on:
   push:
