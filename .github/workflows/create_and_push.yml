@@ -33,5 +33,6 @@ jobs:
 
       - name: Push Docker image to ECR
         run: >
-          docker login -u AWS -p ${{ secrets.AWS_SECRET_ACCESS_KEY }} -e none https://canavan-a.dkr.ecr.us-east-2.amazonaws.com
+          docker login -u AWS -p ${{ secrets.AWS_SECRET_ACCESS_KEY }} https://canavan-a.dkr.ecr.us-east-2.amazonaws.com
           docker push canavan-a.dkr.ecr.us-east-2.amazonaws.com/my-containers:latest
+
