@@ -17,6 +17,9 @@ jobs:
         working-directory: ./server
         run: docker build -t my-image .
 
+      - name: Tag Docker image
+        run: docker tag my-image canavan-a.dkr.ecr.us-east-2.amazonaws.com/my-image:latest
+
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v1
         with:
