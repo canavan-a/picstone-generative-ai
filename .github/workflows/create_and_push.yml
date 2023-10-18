@@ -1,32 +1,30 @@
- 
-name: Create and Push Container
+name: Push to ECR
 
 on:
   push:
     branches:
-    - 'main'
+      - main
 
 jobs:
-  deploy:
+  push-to-ecr:
     runs-on: ubuntu-latest
+
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: code checkout
-      uses: actions/checkout@v2
+      - name: Login to AWS ECR
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region us-east-2
+          aws ecr get-login-password --region us-east-2| docker login --username AWS --password-stdin your-account-id.dkr.ecr.your-region.amazonaws.com
 
-    - name: install the gcloud cli
-      uses: google-github-actions/setup-gcloud@v0
-      with:
-        project_id: ${{ secrets.GOOGLE_PROJECT }}
-        service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        export_default_credentials: true
+      - name: Build and tag Docker image
+        run: |
+          docker build -t test-image .
+          docker tag test-image:latest canavan-a.dkr.ecr.us-east-2.amazonaws.com/my-containers:latest
 
-    - name: build and push the docker image
-      working-directory: ./server
-      env:
-        GOOGLE_PROJECT: ${{ secrets.GOOGLE_PROJECT }}
-
-      run: |
-        gcloud auth configure-docker us-central1-docker.pkg.dev
-        docker build -t us-central1-docker.pkg.dev/$GOOGLE_PROJECT/my-containers/my-container:latest .
-        docker push us-central1-docker.pkg.dev/$GOOGLE_PROJECT/my-containers/my-container:latest
+      - name: Push Docker image to ECR
+        run: |
+          docker push canavan-a.dkr.ecr.your-region.amazonaws.com/my-containers:latest
