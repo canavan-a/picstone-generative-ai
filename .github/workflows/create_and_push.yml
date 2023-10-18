@@ -16,7 +16,7 @@ jobs:
         run: docker build -t my-image .
 
       - name: Tag Docker image
-        run: docker tag my-image canavan-a.dkr.ecr.us-east-2.amazonaws.com/my-image:latest
+        run: docker tag my-image canavan-a.dkr.ecr.us-east-2.amazonaws.com/my-containers:latest
 
       - name: Authenticate with AWS
         uses: aws-actions/configure-aws-credentials@v1
@@ -25,4 +25,4 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
       - name: Push Docker image to ECR
-        run: docker push canavan-a.dkr.ecr.us-east-2.amazonaws.com/my-image:latest
+        run: docker push canavan-a.dkr.ecr.us-east-2.amazonaws.com/my-containers:latest
