@@ -15,7 +15,7 @@ jobs:
 
       - name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
+        uses: aws/actions/amazon-ecr-login@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -29,7 +29,7 @@ jobs:
         run: docker tag my-image canavan-a.dkr.ecr.us-east-2.amazonaws.com/my-containers:latest
 
       - name: Push Docker image to ECR
-        uses: aws-actions/amazon-ecr-push@v2
+        uses: aws/actions/amazon-ecr-push@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
