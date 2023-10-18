@@ -6,25 +6,23 @@ on:
       - main
 
 jobs:
-  push-to-ecr:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Check out code
+        uses: actions/checkout@v3
 
-      - name: Login to AWS ECR
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set default.region us-east-2
-          aws ecr get-login-password --region us-east-2| docker login --username AWS --password-stdin canavan-a.dkr.ecr.us-east-2.amazonaws.com
+      - name: Build Docker image
+        working-directory: ./server
+        run: docker build -t my-image .
 
-      - name: Build and tag Docker image
-        run: |
-          docker build -t test-image .
-          docker tag test-image:latest canavan-a.dkr.ecr.us-east-2.amazonaws.com/my-containers:latest
+      - name: Authenticate with AWS
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
 
       - name: Push Docker image to ECR
-        run: |
-          docker push canavan-a.dkr.ecr.us-east-2.amazonaws.com/my-containers:latest
+        run: docker push canavan-a.dkr.ecr.us-east-2.amazonaws.com/my-image:latest
