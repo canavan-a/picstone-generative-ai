@@ -18,7 +18,7 @@ jobs:
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws configure set default.region us-east-2
-          aws ecr get-login-password --region us-east-2| docker login --username AWS --password-stdin your-account-id.dkr.ecr.your-region.amazonaws.com
+          aws ecr get-login-password --region us-east-2| docker login --username AWS --password-stdin canavan-a.dkr.ecr.us-east-2.amazonaws.com
 
       - name: Build and tag Docker image
         run: |
@@ -27,4 +27,4 @@ jobs:
 
       - name: Push Docker image to ECR
         run: |
-          docker push canavan-a.dkr.ecr.your-region.amazonaws.com/my-containers:latest
+          docker push canavan-a.dkr.ecr.us-east-2.amazonaws.com/my-containers:latest
