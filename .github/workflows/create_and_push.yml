@@ -11,6 +11,12 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
+        
+      - name: Create .env file
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
+        run: |
+          echo "$ENV_FILE" > ./server/.env
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
